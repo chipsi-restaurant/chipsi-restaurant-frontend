@@ -4,6 +4,7 @@ import {RefreshRequest} from "./models/request/refreshRequest";
 
 
 const api = axios.create({
+    baseURL: "/",
     withCredentials: true, // Для работы с httpOnly cookies (если сервер использует)
 });
 
