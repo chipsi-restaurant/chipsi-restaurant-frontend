@@ -154,44 +154,49 @@ const MenuPage: React.FC = () => {
             <h1>Админ-панель</h1>
 
             <section className={styles.section}>
-                <h2>Добавить категорию</h2>
+                <h2 className={styles.sectionTitle}>Добавить категорию</h2>
                 <input
+                    className={styles.input}
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value)}
                     placeholder="Название категории"
                 />
-                <button onClick={addCategory}>Добавить</button>
+                <button className={styles.button} onClick={addCategory}>Добавить</button>
 
-                <ul>
+                <ul className={styles.list}>
                     {categories.map((cat) => (
-                        <li key={cat.id}>
+                        <li className={styles.listItem} key={cat.id}>
                             {cat.name}
-                            <button onClick={() => deleteCategory(cat.id)}>Удалить</button>
+                            <button className={styles.deleteButton} onClick={() => deleteCategory(cat.id)}>Удалить</button>
                         </li>
                     ))}
                 </ul>
             </section>
 
             <section className={styles.section}>
-                <h2>Добавить блюдо</h2>
+                <h2 className={styles.sectionTitle}>Добавить блюдо</h2>
                 <input
+                    className={styles.input}
                     type="text"
                     placeholder="Название блюда"
                     value={newItem.name}
                     onChange={(e) => setNewItem({...newItem, name: e.target.value})}
                 />
                 <textarea
+                    className={styles.textarea}
                     placeholder="Описание"
                     value={newItem.description}
                     onChange={(e) => setNewItem({...newItem, description: e.target.value})}
                 />
                 <input
+                    className={styles.input}
                     type="number"
                     placeholder="Цена"
                     value={newItem.price}
                     onChange={(e) => setNewItem({...newItem, price: parseFloat(e.target.value)})}
                 />
                 <select
+                    className={styles.select}
                     value={newItem.categoryId}
                     onChange={(e) => setNewItem({...newItem, categoryId: Number(e.target.value)})}
                 >
@@ -203,13 +208,15 @@ const MenuPage: React.FC = () => {
                     ))}
                 </select>
                 <input
+                    className={styles.input}
                     type="file"
                     accept="image/*"
                     onChange={(e) => setImageFile(e.target.files?.[0] || null)}
                 />
-                <button onClick={addMenuItem} disabled={isLoading}>
+                <button className={styles.button} onClick={addMenuItem} disabled={isLoading}>
                     {isLoading ? "Добавление..." : "Добавить блюдо"}
-                </button>            </section>
+                </button>
+            </section>
 
             <section className={styles.section}>
                 <h2>Меню по категориям</h2>
