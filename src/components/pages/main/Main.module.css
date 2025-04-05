@@ -1,0 +1,13 @@
+.container {
+    padding: 24px;
+}
+
+.categoryBlock {
+    margin-bottom: 40px;
+}
+
+.cardGrid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
