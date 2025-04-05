@@ -5,6 +5,7 @@ import Signup from "../pages/signup/Signup";
 import Main from "../pages/main/Main";
 import {useSelector} from "react-redux";
 import {RootState} from "../../store/store";
+import MenuPage from "../pages/admin/menuPage/MenuPage";
 
 
 
@@ -37,6 +38,7 @@ const AppRouter = () => {
                     </PrivateRoute>
                 }
             />
+            <Route path="/admin/menu" element={<MenuPage/>}></Route>
             <Route path="/login" element={<Login/>} />
             <Route path="/signup" element={<Signup/>}/>
             <Route path="*" element={<Navigate to={"/login"} />} />
