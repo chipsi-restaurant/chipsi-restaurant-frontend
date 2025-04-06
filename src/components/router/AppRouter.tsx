@@ -6,6 +6,7 @@ import Main from "../pages/main/Main";
 import {useSelector} from "react-redux";
 import {RootState} from "../../store/store";
 import MenuPage from "../pages/admin/menuPage/MenuPage";
+import Profile from "../pages/profile/Profile";
 
 
 
@@ -35,6 +36,14 @@ const AppRouter = () => {
                 element={
                     <PrivateRoute>
                         <Main />
+                    </PrivateRoute>
+                }
+            />
+            <Route
+                path="/profile"
+                element={
+                    <PrivateRoute>
+                        <Profile />
                     </PrivateRoute>
                 }
             />
