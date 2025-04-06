@@ -8,7 +8,6 @@ import MenuService from "../../../api/services/menuService";
 import { MenuItem } from "../../../api/models/dto/menuItem";
 import CategoryService from "../../../api/services/categoryService";
 import { Category } from "../../../api/models/dto/category";
-import Header from "../../header/Header";
 import CategoryNav from "../../categoryNav/CategoryNav";
 
 const Main: React.FC = () => {
@@ -75,7 +74,6 @@ const Main: React.FC = () => {
 
     return (
         <div>
-            <Header />
             <div ref={sentinelRef} />
 
             <CategoryNav
