@@ -19,6 +19,10 @@
     width: 50px;
 }
 
+.logo:hover {
+    cursor: pointer;
+}
+
 .search {
     background-color: white;
     display: flex;

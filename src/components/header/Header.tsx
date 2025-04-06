@@ -3,22 +3,22 @@ import styles from "./Header.module.css";
 import logo from "../../assets/logo.png";
 import {
     FaUser as UserIconRaw,
-    FaShoppingBasket as BasketIconRaw,
     FaSearch as SearchIconRaw,
 } from "react-icons/fa";
 import AddressPopup from "../addressPopup/AddressPopup";
+import {useNavigate} from "react-router-dom";
 
 const SearchIcon = SearchIconRaw as unknown as React.FC<React.SVGProps<SVGSVGElement>>;
 const UserIcon = UserIconRaw as unknown as React.FC<React.SVGProps<SVGSVGElement>>;
-const BasketIcon = BasketIconRaw as unknown as React.FC<React.SVGProps<SVGSVGElement>>;
 
 const Header: React.FC = () => {
     const [showPopup, setShowPopup] = useState(false);
+    const navigate = useNavigate()
 
     return (
         <header className={styles.header}>
             <div className={styles.left}>
-                <img src={logo} alt="Логотип" className={styles.logo} />
+                <img src={logo} alt="Логотип" className={styles.logo} onClick={() => navigate("/")}/>
                 <div className={styles.search}>
                     <SearchIcon className={styles.searchIcon} />
                     <input type="text" placeholder="Поиск" />
@@ -40,18 +40,7 @@ const Header: React.FC = () => {
 
                 <div className={styles.profile}>
                     <UserIcon className={styles.icon} />
-                    <p>Профиль</p>
-                </div>
-
-                <div className={styles.basket}>
-                    <BasketIcon className={styles.icon} />
-                    <p>Корзина</p>
-                </div>
-
-
-                <div className={styles.basketInfo}>
-                    <span>0 ₽</span>
-                    <small>0 шт.</small>
+                    <p onClick={() => navigate("/profile")}>Профиль</p>
                 </div>
             </div>
         </header>
