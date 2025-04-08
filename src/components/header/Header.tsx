@@ -38,9 +38,9 @@ const Header: React.FC = () => {
                     )}
                 </div>
 
-                <div className={styles.profile}>
+                <div className={styles.profile} onClick={() => navigate("/profile")}>
                     <UserIcon className={styles.icon} />
-                    <p onClick={() => navigate("/profile")}>Профиль</p>
+                    <p>Профиль</p>
                 </div>
             </div>
         </header>
