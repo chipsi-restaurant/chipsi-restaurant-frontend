@@ -7,13 +7,16 @@ type ProductCardProps = {
     description: string;
     price: number;
     imageUrl: string;
+    onAddToCart?: () => void;
 };
+
 
 const ProductCard: React.FC<ProductCardProps> = ({
                                                      title,
                                                      description,
                                                      price,
                                                      imageUrl,
+                                                     onAddToCart
                                                  }) => {
     return (
         <div className={styles.card}>
@@ -24,7 +27,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             </div>
             <div className={styles.footer}>
                 <span className={styles.price}>от {price} ₽</span>
-                <button className={styles.button}>Выбрать</button>
+                <button onClick={onAddToCart} className={styles.button}>Выбрать</button>
             </div>
         </div>
     );
