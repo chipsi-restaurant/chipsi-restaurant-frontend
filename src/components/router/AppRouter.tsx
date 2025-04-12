@@ -7,7 +7,8 @@ import {useSelector} from "react-redux";
 import {RootState} from "../../store/store";
 import MenuPage from "../pages/admin/menuPage/MenuPage";
 import Profile from "../pages/profile/Profile";
-
+import CheckoutPage from "../pages/checkoutPage/CheckoutPage";
+import GiftCardPage from "../pages/giftCardPage/GiftCardPage";
 
 
 interface PrivateRouteProps {
@@ -18,11 +19,11 @@ interface PrivateRouteProps {
     children: JSX.Element;
 }
 
-const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
+const PrivateRoute: React.FC<PrivateRouteProps> = ({children}) => {
     const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
     if (!isAuthenticated) {
-        return <Navigate to="/login" replace />;
+        return <Navigate to="/login" replace/>;
     }
 
     return children;
@@ -35,7 +36,7 @@ const AppRouter = () => {
                 path="/"
                 element={
                     <PrivateRoute>
-                        <Main />
+                        <Main/>
                     </PrivateRoute>
                 }
             />
@@ -43,14 +44,30 @@ const AppRouter = () => {
                 path="/profile"
                 element={
                     <PrivateRoute>
-                        <Profile />
+                        <Profile/>
+                    </PrivateRoute>
+                }
+            />
+            <Route
+                path="/checkout"
+                element={
+                    <PrivateRoute>
+                        <CheckoutPage/>
+                    </PrivateRoute>
+                }
+            />
+            <Route
+                path="/gift"
+                element={
+                    <PrivateRoute>
+                        <GiftCardPage/>
                     </PrivateRoute>
                 }
             />
             <Route path="/admin/menu" element={<MenuPage/>}></Route>
-            <Route path="/login" element={<Login/>} />
+            <Route path="/login" element={<Login/>}/>
             <Route path="/signup" element={<Signup/>}/>
-            <Route path="*" element={<Navigate to={"/login"} />} />
+            <Route path="*" element={<Navigate to={"/login"}/>}/>
         </Routes>
     );
 };

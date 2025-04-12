@@ -44,7 +44,7 @@ const Profile: React.FC = () => {
 
     return (
         <div>
-            <ToastContainer />
+            <ToastContainer/>
             <div className={styles.container}>
                 <h1>Личные данные</h1>
 

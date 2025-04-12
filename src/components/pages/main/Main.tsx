@@ -16,6 +16,7 @@ import { RootState } from "../../../store/store";
 import { addToCart, removeFromCart, changeQuantity } from "../../../store/cartSlice";
 import {toast, ToastContainer} from "react-toastify";
 import CustomToast from "../../ui/customToast/CustomToast";
+import {useNavigate} from "react-router-dom";
 
 const Main: React.FC = () => {
     const [categories, setCategories] = useState<Category[]>([]);
@@ -28,6 +29,7 @@ const Main: React.FC = () => {
 
     const cartItems = useSelector((state: RootState) => state.cart.items);
     const dispatch = useDispatch();
+    const navigate = useNavigate()
 
     const handleAddToCart = (item: MenuItem) => {
         dispatch(addToCart({
@@ -38,7 +40,7 @@ const Main: React.FC = () => {
             quantity: 1,
         }));
         toast(<CustomToast title="Добавлено:" description={`${item.name}`} />, {
-            autoClose: 2000,
+            autoClose: 1000,
             closeButton: false,
             hideProgressBar: true,
             position: "top-right",
@@ -48,7 +50,7 @@ const Main: React.FC = () => {
                 padding: "12px 16px",
                 color: "white",
                 borderRadius: "12px",
-                marginTop: "60px",
+                marginTop: isSticky ? 60 : 120, // ← можно точно подогнать под высоту CategoryNav
             },
         });
 
@@ -157,7 +159,7 @@ const Main: React.FC = () => {
                 items={cartItems}
                 onClose={() => setIsCartOpen(false)}
                 onRemove={handleRemove}
-                onCheckout={() => console.log("checkout")}
+                onCheckout={() => navigate("/checkout")}
                 onQuantityChange={handleQuantityChange}
             />
         </div>

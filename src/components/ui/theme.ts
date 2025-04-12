@@ -20,9 +20,30 @@ const theme = createTheme({
         MuiInputLabel: {
             styleOverrides: {
                 root: {
-                    color: '#000', // Черный placeholder
+                    color: '#000',
                     '&.Mui-focused': {
-                        color: '#000', // Черный при фокусе
+                        color: '#000',
+                    },
+                },
+            },
+        },
+        MuiRadio: {
+            styleOverrides: {
+                root: {
+                    color: 'black',
+                    '&.Mui-checked': {
+                        color: 'black',
+                    },
+                },
+            },
+        },
+        MuiButton: {
+            styleOverrides: {
+                root: {
+                    color: '#fff',
+                    backgroundColor: 'black',
+                    '&:hover': {
+                        backgroundColor: 'black',
                     },
                 },
             },
