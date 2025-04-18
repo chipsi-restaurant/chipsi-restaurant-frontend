@@ -15,7 +15,7 @@ import { Add, Delete } from "@mui/icons-material";
 import AddressFormPopup from "../addressFormPopup/AddressFormPopup";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
-import { addAddress, deleteAddress, selectAddress } from "../../store/addressSlice";
+import { addAddress, Address, deleteAddress, selectAddress } from "../../store/addressSlice";
 
 declare global {
     interface Window {
@@ -23,7 +23,7 @@ declare global {
     }
 }
 
-const DeliveryAddressSelector: React.FC<{ open: boolean; onClose: () => void, setAddress : (address: string) => void }> = ({ open, onClose, setAddress }) => {
+const DeliveryAddressSelector: React.FC<{ open: boolean; onClose: () => void, setAddress: (address: Address) => void }> = ({ open, onClose, setAddress }) => {
     const dispatch = useDispatch();
     const addresses = useSelector((state: RootState) => state.address.list);
     const selected = useSelector((state: RootState) => state.address.selected);
@@ -37,14 +37,13 @@ const DeliveryAddressSelector: React.FC<{ open: boolean; onClose: () => void, se
     useEffect(() => {
         if (!open) return;
 
-        const kremlinCoordinates = [55.7558, 37.6173]; // Массив теперь внутри useEffect
+        const kremlinCoordinates = [55.7558, 37.6173]; // Координаты Кремля
 
         const loadMap = () => {
             if (!window.ymaps || !mapRef.current || mapWasInitialized.current) return;
 
             window.ymaps.ready(() => {
                 if (mapRef.current && !mapInstance.current) {
-                    // Если адресов нет, центрируем на Кремле
                     const centerCoordinates = selected ? [selected.lat, selected.lng] : kremlinCoordinates;
 
                     mapInstance.current = new window.ymaps.Map(mapRef.current, {
@@ -53,7 +52,6 @@ const DeliveryAddressSelector: React.FC<{ open: boolean; onClose: () => void, se
                         controls: []
                     });
 
-                    // Если адрес выбран, добавляем маркер для этого адреса
                     if (selected) {
                         placemark.current = new window.ymaps.Placemark([selected.lat, selected.lng], {}, { draggable: false });
                         mapInstance.current.geoObjects.add(placemark.current);
@@ -66,55 +64,62 @@ const DeliveryAddressSelector: React.FC<{ open: boolean; onClose: () => void, se
 
         if (!window.ymaps) {
             const script = document.createElement("script");
-            script.src = "https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=";
+            script.src = "https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=ef403661-a6e9-4b4f-8ea5-71e4c352ca5e";
             script.type = "text/javascript";
             script.onload = loadMap;
             document.body.appendChild(script);
         } else {
             loadMap();
         }
-    }, [selected, open, selected?.lat, selected?.lng, addresses.length]);
+    }, [selected, open]);
 
+    // Перемещение камеры и маркера на новый адрес
     useEffect(() => {
-        if (window.ymaps && mapInstance.current && selected) {
-            const newCoords = [selected.lat, selected.lng];
+        if (!window.ymaps || !mapInstance.current || !selected) return;
 
-            if (placemark.current) {
-                placemark.current.geometry.setCoordinates(newCoords);
-            } else {
-                placemark.current = new window.ymaps.Placemark(newCoords, {}, { draggable: false });
-                mapInstance.current.geoObjects.add(placemark.current);
-            }
-
-            const shiftedCoords = [selected.lat, selected.lng - 0.001];
-
-            mapInstance.current.setCenter(shiftedCoords, 16, {
-                checkZoomRange: true,
-                duration: 500,
-                timingFunction: "ease-in-out",
-            });
+        const newCoords = [selected.lat, selected.lng];
+        if (placemark.current) {
+            placemark.current.geometry.setCoordinates(newCoords);
+        } else {
+            placemark.current = new window.ymaps.Placemark(newCoords, {}, { draggable: false });
+            mapInstance.current.geoObjects.add(placemark.current);
         }
-    }, [selected]); // Добавлено 'selected' в зависимости
+
+        mapInstance.current.setCenter(newCoords, 16, {
+            checkZoomRange: true,
+            duration: 500,
+            timingFunction: "ease-in-out",
+        });
+    }, [selected]);
 
     const handleOrder = () => {
         if (selected) {
-            setAddress(selected.label)
-            onClose()
+            setAddress(selected); // Передаем весь объект Address
+            onClose();
         }
     };
 
-    const handleAddAddress = (fullAddress: string) => {
+    const handleAddAddress = (fullAddress: Address) => {
         if (!window.ymaps) {
             alert("Ошибка загрузки карты. Попробуйте позже.");
             return;
         }
 
-        window.ymaps.geocode(fullAddress).then((res: any) => {
+        window.ymaps.geocode(fullAddress.address).then((res: any) => {
             const firstGeoObject = res.geoObjects.get(0);
             if (!firstGeoObject) return;
 
             const coords = firstGeoObject.geometry.getCoordinates();
-            const newEntry = { label: fullAddress, lat: coords[0], lng: coords[1] };
+            const newEntry: Address = {
+                address: fullAddress.address,
+                floor: fullAddress.floor,
+                entrance: fullAddress.entrance,
+                apartmentNumber: fullAddress.apartmentNumber,
+                intercomCode: fullAddress.intercomCode,
+                notes: fullAddress.notes,
+                lat: coords[0],
+                lng: coords[1]
+            };
 
             dispatch(addAddress(newEntry));
         }).catch((err: any) => {
@@ -123,8 +128,8 @@ const DeliveryAddressSelector: React.FC<{ open: boolean; onClose: () => void, se
         });
     };
 
-    const handleDeleteAddress = (label: string) => {
-        dispatch(deleteAddress(label));
+    const handleDeleteAddress = (address: Address) => {
+        dispatch(deleteAddress(address)); // Передаем полный объект Address
     };
 
     return (
@@ -140,7 +145,6 @@ const DeliveryAddressSelector: React.FC<{ open: boolean; onClose: () => void, se
 
                     <Divider sx={{ mb: 2 }} />
 
-                    {/* Показать текст, если адресов нет */}
                     {addresses.length === 0 && (
                         <Typography variant="body2" color="text.secondary" mb={2}>
                             Пока нет ни одного адреса. Добавьте новый, чтобы продолжить.
@@ -148,16 +152,19 @@ const DeliveryAddressSelector: React.FC<{ open: boolean; onClose: () => void, se
                     )}
 
                     <RadioGroup
-                        value={selected?.label || ""}
+                        value={selected?.address || ""}
                         onChange={(e) => {
-                            dispatch(selectAddress(e.target.value));
+                            const selectedAddress = addresses.find(addr => addr.address === e.target.value);
+                            if (selectedAddress) {
+                                dispatch(selectAddress(selectedAddress)); // Передаем полный объект Address
+                            }
                         }}
                     >
                         {addresses.map((addr) => (
-                            <Box key={addr.label} display="flex" alignItems="center" justifyContent="space-between" sx={{ mb: 1 }}>
-                                <FormControlLabel value={addr.label} control={<Radio />} label={addr.label} />
+                            <Box key={addr.address} display="flex" alignItems="center" justifyContent="space-between" sx={{ mb: 1 }}>
+                                <FormControlLabel value={addr.address} control={<Radio />} label={addr.address} />
                                 <Box>
-                                    <IconButton size="small" onClick={() => handleDeleteAddress(addr.label)}>
+                                    <IconButton size="small" onClick={() => handleDeleteAddress(addr)}>
                                         <Delete fontSize="small" />
                                     </IconButton>
                                 </Box>

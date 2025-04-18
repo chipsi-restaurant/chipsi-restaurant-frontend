@@ -1,23 +1,13 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import {useSelector} from "react-redux";
 import PromoCodeInput from "../../promoCodeInput/PromoCodeInput";
 import styles from "./CheckoutPage.module.css";
 import { ToastContainer } from "react-toastify";
 import DeliveryAddressSelector from "../../deliverySelector/DeliveryAddressSelector";
+import {Address} from "../../../store/addressSlice";
+import {RootState} from "../../../store/store";
 
-type CartItem = {
-    id: number;
-    title: string;
-    quantity: number;
-    price: number;
-    imageUrl: string;
-};
 
-interface RootState {
-    cart: {
-        items: CartItem[];
-    };
-}
 
 const CheckoutPage: React.FC = () => {
     const items = useSelector((state: RootState) => state.cart.items);
@@ -25,7 +15,7 @@ const CheckoutPage: React.FC = () => {
     const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const finalTotal = total - discount;
     const [isOpen, setIsOpen] = useState(false); // для открытия модального окна выбора адреса
-    const [selectedAddress, setSelectedAddress] = useState<string | null>(null); // храним выбранный адрес
+    const [selectedAddress, setSelectedAddress] = useState<Address | null>(useSelector((state: RootState) => state.address.selected)); // храним выбранный адрес
     const [userInfo, setUserInfo] = useState({
         name: "Иван Иванов",
         email: "ivan@example.com",
@@ -92,12 +82,16 @@ const CheckoutPage: React.FC = () => {
                         <p><strong>Телефон:</strong> {userInfo.phone}</p>
                     </div>
 
-                    <h3>Адрес доставки</h3>
+                    <h3>Адрес доставки:</h3>
                     {/* Отображаем выбранный адрес или сообщение о его отсутствии */}
                     <div className={styles.selectedAddressContainer}>
                         {selectedAddress ? (
                             <div className={styles.selectedAddress}>
-                                <p>{selectedAddress}</p>
+                                <p>{selectedAddress.address}</p>
+                                <p>Подъезд: {selectedAddress.entrance}</p>
+                                <p>Этаж: {selectedAddress.floor} </p>
+                                <p>Квартира: {selectedAddress.floor}</p>
+                                <p>Комментарий: {selectedAddress.notes} </p>
                                 <button
                                     className={styles.changeAddressBtn}
                                     onClick={() => setIsOpen(true)} // Открытие модального окна для выбора нового адреса

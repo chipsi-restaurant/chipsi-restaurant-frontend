@@ -4,6 +4,7 @@ import TextField from "@mui/material/TextField";
 import CircularProgress from "@mui/material/CircularProgress";
 import Autocomplete from "@mui/material/Autocomplete";
 import axios from "axios";
+import {Address} from "../../store/addressSlice";
 
 interface Suggestion {
     title: string;
@@ -13,7 +14,7 @@ interface Suggestion {
 interface Props {
     open: boolean;
     onClose: () => void;
-    onSubmit: (address: string) => void;
+    onSubmit: (address: Address) => void;  // Функция теперь принимает объект Address
 }
 
 const AddressFormPopup: React.FC<Props> = ({ open, onClose, onSubmit }) => {
@@ -37,7 +38,7 @@ const AddressFormPopup: React.FC<Props> = ({ open, onClose, onSubmit }) => {
         try {
             const response = await axios.get("https://suggest-maps.yandex.ru/v1/suggest", {
                 params: {
-                    apikey: "",
+                    apikey: "c44b92d8-a28e-459a-9c97-0c027c29326b",
                     text: input,
                     lang: "ru_RU",
                     results: 5,
@@ -73,8 +74,17 @@ const AddressFormPopup: React.FC<Props> = ({ open, onClose, onSubmit }) => {
     };
 
     const handleSubmit = () => {
-        const full = `${query}, под. ${entrance}, этаж ${floor}, кв. ${flat}, код ${doorCode}. Комментарий: ${comment}`;
-        onSubmit(full);
+        const fullAddress: Address = {
+            address: query,
+            floor: parseInt(floor, 10),
+            entrance,
+            apartmentNumber: parseInt(flat, 10),
+            intercomCode: doorCode,
+            notes: comment,
+            lat: 0, // координаты нужно получить через геокодирование
+            lng: 0, // координаты нужно получить через геокодирование
+        };
+        onSubmit(fullAddress); // Передаем объект Address
         onClose();
     };
 
