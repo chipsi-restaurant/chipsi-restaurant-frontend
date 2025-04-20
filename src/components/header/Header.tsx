@@ -4,12 +4,15 @@ import logo from "../../assets/logo.png";
 import {
     FaUser as UserIconRaw,
     FaSearch as SearchIconRaw,
+    FaShoppingCart as OrdersIconRaw,
 } from "react-icons/fa";
 import AddressPopup from "../addressPopup/AddressPopup";
 import {useNavigate} from "react-router-dom";
 
 const SearchIcon = SearchIconRaw as unknown as React.FC<React.SVGProps<SVGSVGElement>>;
 const UserIcon = UserIconRaw as unknown as React.FC<React.SVGProps<SVGSVGElement>>;
+const OrdersIcon = OrdersIconRaw as unknown as React.FC<React.SVGProps<SVGSVGElement>>;
+
 
 const Header: React.FC = () => {
     const [showPopup, setShowPopup] = useState(false);
@@ -41,6 +44,11 @@ const Header: React.FC = () => {
                 <div className={styles.profile} onClick={() => navigate("/profile")}>
                     <UserIcon className={styles.icon} />
                     <p>Профиль</p>
+                </div>
+
+                <div className={styles.profile} onClick={() => navigate("/orders")}>
+                    <OrdersIcon className={styles.icon} />
+                    <p>Заказы</p>
                 </div>
             </div>
         </header>
