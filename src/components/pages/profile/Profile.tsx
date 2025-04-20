@@ -74,50 +74,7 @@ const Profile: React.FC = () => {
                     />
                 </div>
 
-                <h1>История заказов</h1>
-                <p style={{ marginBottom: 20, color: "#555" }}>
-                    20 заказов за последние 90 дней
-                </p>
-                <table className={styles.orderTable}>
-                    <thead>
-                    <tr>
-                        <th>№</th>
-                        <th>Время заказа</th>
-                        <th>Сумма</th>
-                        <th>Способ оплаты</th>
-                        <th>Чек</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>163</td>
-                        <td>2 апр. 2025 г., 15:54</td>
-                        <td>923 ₽</td>
-                        <td>•••• 1234</td>
-                        <td>
-                            <span className={styles.viewCheck}>Посмотреть</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>107</td>
-                        <td>18 мар. 2025 г., 15:25</td>
-                        <td>617 ₽</td>
-                        <td>•••• 4321</td>
-                        <td>
-                            <span className={styles.viewCheck}>Посмотреть</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>477</td>
-                        <td>15 мар. 2025 г., 21:04</td>
-                        <td>703 ₽</td>
-                        <td>•••• 5678</td>
-                        <td>
-                            <span className={styles.viewCheck}>Посмотреть</span>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+
             </div>
         </div>
     );

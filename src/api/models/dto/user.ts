@@ -6,4 +6,5 @@ export interface User {
     lastName: string;
     createdAt: string;
     bonuses: number;
+    isAdmin: boolean;
 }

@@ -1,15 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { TextField, Button, Container, Typography, Box, Paper, Link } from "@mui/material";
+import {
+    TextField,
+    Button,
+    Container,
+    Typography,
+    Box,
+    Paper,
+    Link,
+} from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../store/store";
-import { loginUser } from "../../../store/authSlice";
+import { loginUser, fetchCurrentUser } from "../../../store/authSlice";
 import { LoginRequest } from "../../../api/models/request/loginRequest";
 import { useNavigate } from "react-router-dom";
 
 const Login: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
-    const { loading, error, isAuthenticated } = useSelector((state: RootState) => state.auth);
+    const { loading, error, isAuthenticated, user } = useSelector((state: RootState) => state.auth);
 
     const [request, setRequest] = useState<LoginRequest>({ login: "", password: "" });
 
@@ -22,12 +30,17 @@ const Login: React.FC = () => {
         dispatch(loginUser(request));
     };
 
-    // Редирект при успешной авторизации
     useEffect(() => {
-        if (isAuthenticated) {
-            navigate("/"); // или другая защищённая страница
+        if (isAuthenticated && !user) {
+            dispatch(fetchCurrentUser());
         }
-    }, [isAuthenticated, navigate]);
+    }, [isAuthenticated, user, dispatch]);
+
+    useEffect(() => {
+        if (user) {
+            navigate("/");
+        }
+    }, [user, navigate]);
 
     return (
         <Container component="main" maxWidth="sm" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
@@ -57,7 +70,13 @@ const Login: React.FC = () => {
                     <Box sx={{ minHeight: 24 }}>
                         {error && <Typography color="error">{error}</Typography>}
                     </Box>
-                    <Button type="submit" variant="contained" sx={{ backgroundColor: '#000', color: '#fff', mt: 2 }} fullWidth disabled={loading}>
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        sx={{ backgroundColor: '#000', color: '#fff', mt: 2 }}
+                        fullWidth
+                        disabled={loading}
+                    >
                         {loading ? "Вход..." : "Войти"}
                     </Button>
                     <Typography variant="body2" sx={{ mt: 2 }}>

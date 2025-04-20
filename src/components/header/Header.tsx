@@ -1,54 +1,62 @@
-import React, { useState } from "react";
 import styles from "./Header.module.css";
 import logo from "../../assets/logo.png";
 import {
+    FaUserShield,
+    FaSignOutAlt,
     FaUser as UserIconRaw,
-    FaSearch as SearchIconRaw,
     FaShoppingCart as OrdersIconRaw,
+    FaGift as GiftsIconRaw,
 } from "react-icons/fa";
-import AddressPopup from "../addressPopup/AddressPopup";
 import {useNavigate} from "react-router-dom";
+import React from "react";
+import {useSelector} from "react-redux";
+import {RootState} from "../../store/store";
+import { useDispatch } from "react-redux";
+import {logout} from "../../store/authSlice";
 
-const SearchIcon = SearchIconRaw as unknown as React.FC<React.SVGProps<SVGSVGElement>>;
 const UserIcon = UserIconRaw as unknown as React.FC<React.SVGProps<SVGSVGElement>>;
 const OrdersIcon = OrdersIconRaw as unknown as React.FC<React.SVGProps<SVGSVGElement>>;
-
+const GiftIcon = GiftsIconRaw as unknown as React.FC<React.SVGProps<SVGSVGElement>>;
+const AdminIcon = FaUserShield as unknown as React.FC<React.SVGProps<SVGSVGElement>>;
+const LogoutIcon = FaSignOutAlt as unknown as React.FC<React.SVGProps<SVGSVGElement>>;
 
 const Header: React.FC = () => {
-    const [showPopup, setShowPopup] = useState(false);
     const navigate = useNavigate()
+    const dispatch = useDispatch();
+    const { user } = useSelector((state: RootState) => state.auth);
 
     return (
         <header className={styles.header}>
             <div className={styles.left}>
                 <img src={logo} alt="Логотип" className={styles.logo} onClick={() => navigate("/")}/>
-                <div className={styles.search}>
-                    <SearchIcon className={styles.searchIcon} />
-                    <input type="text" placeholder="Поиск" />
-                </div>
+                <h2 style={{cursor: "pointer"}} onClick={() => navigate("/")}>Ресторан Чипсы</h2>
             </div>
 
             <div className={styles.right}>
-                <div className={styles.deliveryWrapper}>
-                    <div className={styles.delivery} onClick={() => setShowPopup(!showPopup)}>
-                        <span>Укажите адрес доставки</span>
-                        <div className={styles.time}>от 45 мин</div>
+                {user?.isAdmin && (
+                    <div className={styles.profile} onClick={() => navigate("/admin/menu")}>
+                        <AdminIcon className={styles.icon} />
+                        <p>Админ</p>
                     </div>
-                    {showPopup && (
-                        <div className={styles.popupWrapper}>
-                            <AddressPopup onClose={() => setShowPopup(false)} />
-                        </div>
-                    )}
-                </div>
-
+                )}
                 <div className={styles.profile} onClick={() => navigate("/profile")}>
                     <UserIcon className={styles.icon} />
                     <p>Профиль</p>
                 </div>
-
                 <div className={styles.profile} onClick={() => navigate("/orders")}>
                     <OrdersIcon className={styles.icon} />
                     <p>Заказы</p>
+                </div>
+                <div className={styles.profile} onClick={() => navigate("/gift")}>
+                    <GiftIcon className={styles.icon} />
+                    <p>Сертификаты</p>
+                </div>
+                <div className={styles.profile} onClick={() => {
+                    dispatch(logout());
+                    navigate("/login");
+                }}>
+                    <LogoutIcon className={styles.icon} />
+                    <p>Выход</p>
                 </div>
             </div>
         </header>
