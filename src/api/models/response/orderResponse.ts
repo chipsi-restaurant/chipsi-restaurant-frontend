@@ -25,3 +25,9 @@ export interface OrderResponse {
     items: OrderItemResponse[];
     delivery: DeliveryResponse;
 }
+
+export interface OrderStatusUpdate {
+    id: number;
+    status: string;
+    delivery: string;
+}
