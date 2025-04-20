@@ -15,61 +15,6 @@
     margin-bottom: 48px;
 }
 
-.label {
-    font-size: 16px;
-    font-weight: 500;
-    margin-bottom: 6px;
-}
-
-.inputGroup {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 24px;
-}
-
-.input {
-    flex: 1;
-    padding: 12px 16px;
-    font-size: 16px;
-    background-color: #f3f3f6;
-    border: 1px solid #eee;
-    border-radius: 12px;
-}
-
-.input:disabled {
-    color: #555;
-    background-color: #f3f3f6;
-}
-
-.button {
-    background-color: #f97316;
-    color: white;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 12px;
-    font-size: 15px;
-    cursor: pointer;
-    white-space: nowrap;
-}
-
-.button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
-
-.inlineForm {
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
-    margin-bottom: 8px;
-}
-
-.inlineForm select,
-.inlineForm input {
-    flex: 1;
-}
-
 .errorText {
     color: red;
     font-size: 13px;
