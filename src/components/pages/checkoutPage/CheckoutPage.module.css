@@ -131,3 +131,9 @@
 .pay {
     max-width: 600px;
 }
+
+.discount {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}

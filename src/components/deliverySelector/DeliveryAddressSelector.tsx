@@ -64,7 +64,7 @@ const DeliveryAddressSelector: React.FC<{ open: boolean; onClose: () => void, se
 
         if (!window.ymaps) {
             const script = document.createElement("script");
-            script.src = "https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=ef403661-a6e9-4b4f-8ea5-71e4c352ca5e";
+            script.src = `${process.env.REACT_APP_GEOCODER_URL}/?lang=ru_RU&apikey=${process.env.REACT_APP_GEOCODER_API_KEY}`;
             script.type = "text/javascript";
             script.onload = loadMap;
             document.body.appendChild(script);

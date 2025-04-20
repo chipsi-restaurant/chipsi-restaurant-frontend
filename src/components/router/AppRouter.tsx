@@ -9,6 +9,7 @@ import MenuPage from "../pages/admin/menuPage/MenuPage";
 import Profile from "../pages/profile/Profile";
 import CheckoutPage from "../pages/checkoutPage/CheckoutPage";
 import GiftCardPage from "../pages/giftCardPage/GiftCardPage";
+import OrderTrackingPage from "../pages/orderTrackingPage/OrderTrackingPage";
 
 
 interface PrivateRouteProps {
@@ -61,6 +62,14 @@ const AppRouter = () => {
                 element={
                     <PrivateRoute>
                         <GiftCardPage/>
+                    </PrivateRoute>
+                }
+            />
+            <Route
+                path="/orders"
+                element={
+                    <PrivateRoute>
+                        <OrderTrackingPage/>
                     </PrivateRoute>
                 }
             />

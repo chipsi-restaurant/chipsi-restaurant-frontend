@@ -36,9 +36,9 @@ const AddressFormPopup: React.FC<Props> = ({ open, onClose, onSubmit }) => {
 
         setLoading(true);
         try {
-            const response = await axios.get("https://suggest-maps.yandex.ru/v1/suggest", {
+            const response = await axios.get(process.env.REACT_APP_SUGGEST_URL ?? "", {
                 params: {
-                    apikey: "c44b92d8-a28e-459a-9c97-0c027c29326b",
+                    apikey: process.env.REACT_APP_SUGGEST_API_KEY,
                     text: input,
                     lang: "ru_RU",
                     results: 5,

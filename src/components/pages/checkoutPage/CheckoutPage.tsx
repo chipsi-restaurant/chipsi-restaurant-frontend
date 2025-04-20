@@ -1,11 +1,16 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {useSelector} from "react-redux";
 import PromoCodeInput from "../../promoCodeInput/PromoCodeInput";
 import styles from "./CheckoutPage.module.css";
-import { ToastContainer } from "react-toastify";
+import {toast, ToastContainer} from "react-toastify";
 import DeliveryAddressSelector from "../../deliverySelector/DeliveryAddressSelector";
 import {Address} from "../../../store/addressSlice";
 import {RootState} from "../../../store/store";
+import {User} from "../../../api/models/dto/user";
+import UserService from "../../../api/services/userService";
+import BonusSelector from "../../bonusSelector/BonusSelector";
+import {OrderAddress, OrderItemsRequest, OrderRequest} from "../../../api/models/request/orderRequest";
+import OrderService from "../../../api/services/orderService";
 
 
 
@@ -13,22 +18,74 @@ const CheckoutPage: React.FC = () => {
     const items = useSelector((state: RootState) => state.cart.items);
     const [discount, setDiscount] = useState(0);
     const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const finalTotal = total - discount;
     const [isOpen, setIsOpen] = useState(false); // для открытия модального окна выбора адреса
     const [selectedAddress, setSelectedAddress] = useState<Address | null>(useSelector((state: RootState) => state.address.selected)); // храним выбранный адрес
-    const [userInfo, setUserInfo] = useState({
-        name: "Иван Иванов",
-        email: "ivan@example.com",
-        phone: "+7 123 456 78 90",
-    }); // Пример информации о пользователе
+    const [user, setUser] = useState<User | null>(null);
+    const [usedBonuses, setUsedBonuses] = useState(0);
+    const finalTotal = total - discount - usedBonuses;
+    const [code, setCode] = useState("");
 
-    const handlePay = () => {
-        if (!selectedAddress) {
-            alert("Пожалуйста, выберите адрес доставки.");
+
+    const handlePromo = (code: string, discount: number) => {
+        setDiscount(discount);
+        setCode(code);
+    }
+
+    const handlePay = async () => {
+        if (items.length === 0) {
+            toast.error("Ваша корзина пуста.");
             return;
         }
-        alert(`Оплата прошла успешно! Доставка по адресу: ${selectedAddress}`);
+
+        if (!selectedAddress) {
+            toast.error("Пожалуйста, выберите адрес доставки.");
+            return;
+        }
+
+        const orderItems: OrderItemsRequest[] = items.map(item => ({
+            id: item.id,
+            quantity: item.quantity
+        }));
+
+        const orderAddress: OrderAddress = {
+            address: selectedAddress.address,
+            floor: selectedAddress.floor,
+            apartmentNumber: selectedAddress.apartmentNumber,
+            intercomCode: selectedAddress.intercomCode,
+            notes: selectedAddress.notes
+        };
+
+        const request: OrderRequest = {
+            orderItems,
+            orderAddress,
+            code: code,
+            usedBonuses
+        };
+
+        try {
+            await OrderService.create(request);
+            toast.success(`Оплата прошла успешно! Доставка по адресу: ${selectedAddress.address}`);
+        } catch (error) {
+            toast.error("Ошибка при оформлении заказа");
+            console.error("Order create error", error);
+        }
     };
+
+
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const response = await UserService.getMe();
+                setUser(response.data);
+            } catch (error) {
+                toast.error("Не удалось загрузить данные пользователя");
+                console.error("Ошибка при загрузке данных пользователя", error);
+            }
+        };
+
+        fetchUser();
+    }, []);
 
     return (
         <div className={styles.page}>
@@ -59,11 +116,19 @@ const CheckoutPage: React.FC = () => {
                                 ))}
                             </ul>
 
-                            <PromoCodeInput total={total} onApplyDiscount={setDiscount}/>
+                            <PromoCodeInput total={total} onApplyDiscount={handlePromo}/>
 
                             <div className={styles.summary}>
                                 <p>Сумма заказа: {total} ₽</p>
-                                <p>Скидка: -{discount} ₽</p>
+                                <div className={styles.discount}>
+                                    {discount > 0 ? (
+                                        <>
+                                            <p>Скидка:</p>
+                                            <p style={{ color: "red" }}>-{discount} ₽</p>
+                                        </>
+                                    ) : null}
+                                </div>
+                                <BonusSelector available={user?.bonuses || 0} used={usedBonuses} maxToUse={total - discount} onChange={setUsedBonuses}/>
                                 <p className={styles.total}>Итого к оплате: {finalTotal} ₽</p>
                                 <button className={styles.payBtn} onClick={handlePay}>
                                     Оплатить
@@ -77,9 +142,9 @@ const CheckoutPage: React.FC = () => {
                 <div className={styles.userInfoSection}>
                     <h2>Информация о пользователе</h2>
                     <div className={styles.userInfo}>
-                        <p><strong>Имя:</strong> {userInfo.name}</p>
-                        <p><strong>Email:</strong> {userInfo.email}</p>
-                        <p><strong>Телефон:</strong> {userInfo.phone}</p>
+                        <p><strong>Имя:</strong> {user?.firstName}</p>
+                        <p><strong>Email:</strong> {user?.email}</p>
+                        <p><strong>Телефон:</strong> {user?.phone}</p>
                     </div>
 
                     <h3>Адрес доставки:</h3>

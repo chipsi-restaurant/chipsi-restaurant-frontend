@@ -1,35 +1,51 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import styles from "./PromoCodeInput.module.css";
-import { toast } from "react-toastify";
+import {toast} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import GiftCertificateService from "../../api/services/giftCertificateService";
 
 interface PromoCodeInputProps {
     total: number;
-    onApplyDiscount: (discount: number) => void;
+    onApplyDiscount: (code:string, discount: number) => void;
 }
 
-const PromoCodeInput: React.FC<PromoCodeInputProps> = ({ total, onApplyDiscount }) => {
+const PromoCodeInput: React.FC<PromoCodeInputProps> = ({total, onApplyDiscount}) => {
     const [code, setCode] = useState("");
     const [applied, setApplied] = useState(false);
 
-    const handleApply = () => {
-        const trimmed = code.trim().toLowerCase();
+    const handleApply = async () => {
+        const trimmed = code.trim();
 
-        if (trimmed === "food10") {
-            const discount = total * 0.1;
-            onApplyDiscount(discount);
-            toast.success("Промокод применён. Скидка 10%!");
+        if (!trimmed) {
+            toast.error("Введите промокод");
+            return;
+        }
+
+        try {
+            const response = await GiftCertificateService.getByCode(trimmed);
+            const certificate = response.data;
+
+            const discount = Math.min(certificate.amount, total);
+            onApplyDiscount(trimmed, discount);
+            toast.success(`Промокод применён! Скидка ${discount} ₽`);
             setApplied(true);
-        } else {
-            onApplyDiscount(0);
-            toast.error("Неверный промокод");
+        } catch (error: any) {
+            onApplyDiscount("",0);
+            if (error.response?.status === 404) {
+                toast.error("Промокод не найден");
+            } else if (error.response?.status === 400) {
+                toast.error("Промокод уже использован");
+            }
+            else {
+                toast.error("Ошибка при проверке промокода");
+            }
         }
     };
 
     const handleCancel = () => {
         setCode("");
         setApplied(false);
-        onApplyDiscount(0);
+        onApplyDiscount("",0);
     };
 
     return (
@@ -43,9 +59,12 @@ const PromoCodeInput: React.FC<PromoCodeInputProps> = ({ total, onApplyDiscount 
                     className={styles.input}
                     disabled={applied}
                 />
-                <button onClick={handleApply} className={styles.button} disabled={applied}>
-                    Применить
-                </button>
+                {!applied && (
+                    <button onClick={handleApply} className={styles.button} disabled={applied}>
+                        Применить
+                    </button>
+                )}
+
                 {applied && (
                     <button onClick={handleCancel} className={styles.cancelButton}>
                         Отменить
