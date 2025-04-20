@@ -1,34 +1,44 @@
-import React, {JSX} from 'react';
-import {Navigate, Route, Routes} from "react-router-dom";
+import React, { JSX } from 'react';
+import { Navigate, Route, Routes } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
+
 import Login from "../pages/login/Login";
 import Signup from "../pages/signup/Signup";
 import Main from "../pages/main/Main";
-import {useSelector} from "react-redux";
-import {RootState} from "../../store/store";
 import MenuPage from "../pages/admin/menuPage/MenuPage";
 import Profile from "../pages/profile/Profile";
 import CheckoutPage from "../pages/checkoutPage/CheckoutPage";
 import GiftCardPage from "../pages/giftCardPage/GiftCardPage";
 import OrderTrackingPage from "../pages/orderTrackingPage/OrderTrackingPage";
 
-
 interface PrivateRouteProps {
     children: JSX.Element;
 }
 
-interface PrivateRouteProps {
-    children: JSX.Element;
-}
-
-const PrivateRoute: React.FC<PrivateRouteProps> = ({children}) => {
+const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
     const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
     if (!isAuthenticated) {
-        return <Navigate to="/login" replace/>;
+        return <Navigate to="/login" replace />;
     }
 
     return children;
 };
+
+interface AdminRouteProps {
+    children: JSX.Element;
+}
+
+const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
+    const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
+    if (!isAuthenticated || !user?.isAdmin) {
+        return <Navigate to="/login" replace />;
+    }
+
+    return children;
+};
+
 
 const AppRouter = () => {
     return (
@@ -37,7 +47,7 @@ const AppRouter = () => {
                 path="/"
                 element={
                     <PrivateRoute>
-                        <Main/>
+                        <Main />
                     </PrivateRoute>
                 }
             />
@@ -45,7 +55,7 @@ const AppRouter = () => {
                 path="/profile"
                 element={
                     <PrivateRoute>
-                        <Profile/>
+                        <Profile />
                     </PrivateRoute>
                 }
             />
@@ -53,7 +63,7 @@ const AppRouter = () => {
                 path="/checkout"
                 element={
                     <PrivateRoute>
-                        <CheckoutPage/>
+                        <CheckoutPage />
                     </PrivateRoute>
                 }
             />
@@ -61,7 +71,7 @@ const AppRouter = () => {
                 path="/gift"
                 element={
                     <PrivateRoute>
-                        <GiftCardPage/>
+                        <GiftCardPage />
                     </PrivateRoute>
                 }
             />
@@ -69,14 +79,21 @@ const AppRouter = () => {
                 path="/orders"
                 element={
                     <PrivateRoute>
-                        <OrderTrackingPage/>
+                        <OrderTrackingPage />
                     </PrivateRoute>
                 }
             />
-            <Route path="/admin/menu" element={<MenuPage/>}></Route>
-            <Route path="/login" element={<Login/>}/>
-            <Route path="/signup" element={<Signup/>}/>
-            <Route path="*" element={<Navigate to={"/login"}/>}/>
+            <Route
+                path="/admin/menu"
+                element={
+                    <AdminRoute>
+                        <MenuPage />
+                    </AdminRoute>
+                }
+            />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="*" element={<Navigate to={"/login"} />} />
         </Routes>
     );
 };

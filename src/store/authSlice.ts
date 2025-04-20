@@ -2,6 +2,18 @@ import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { LoginRequest } from "../api/models/request/loginRequest";
 import { LoginResponse } from "../api/models/response/loginResponse";
 import AuthService from "../api/services/authService";
+import UserService from "../api/services/userService";
+
+interface User {
+    id: number;
+    phone: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    createdAt: string;
+    bonuses: number;
+    isAdmin: boolean;
+}
 
 interface AuthState {
     accessToken: string | null;
@@ -9,6 +21,7 @@ interface AuthState {
     isAuthenticated: boolean;
     loading: boolean;
     error: string | null;
+    user: User | null;
 }
 
 const getLocalToken = (key: string): string | null => {
@@ -22,6 +35,7 @@ const initialState: AuthState = {
     isAuthenticated: !!getLocalToken("accessToken"),
     loading: false,
     error: null,
+    user: null,
 };
 
 export const loginUser = createAsyncThunk<
@@ -40,6 +54,19 @@ export const loginUser = createAsyncThunk<
     }
 );
 
+export const fetchCurrentUser = createAsyncThunk<
+    User,
+    void,
+    { rejectValue: string }
+>("auth/fetchCurrentUser", async (_, { rejectWithValue }) => {
+    try {
+        const response = await UserService.getMe(); // GET /users/me
+        return response.data;
+    } catch (error: any) {
+        return rejectWithValue("Не удалось получить данные пользователя");
+    }
+});
+
 const authSlice = createSlice({
     name: "auth",
     initialState,
@@ -47,6 +74,7 @@ const authSlice = createSlice({
         logout: (state) => {
             state.accessToken = null;
             state.refreshToken = null;
+            state.user = null;
             state.isAuthenticated = false;
             localStorage.removeItem("accessToken");
             localStorage.removeItem("refreshToken");
@@ -70,6 +98,12 @@ const authSlice = createSlice({
             .addCase(loginUser.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload || "Неизвестная ошибка";
+            })
+            .addCase(fetchCurrentUser.fulfilled, (state, action: PayloadAction<User>) => {
+                state.user = action.payload;
+            })
+            .addCase(fetchCurrentUser.rejected, (state, action) => {
+                state.error = action.payload || "Ошибка при загрузке пользователя";
             });
     },
 });
