@@ -85,6 +85,12 @@ const Login: React.FC = () => {
                             Зарегистрироваться
                         </Link>
                     </Typography>
+                    <Typography variant="body2">
+                        Забыли пароль?{" "}
+                        <Link href="/reset-password" underline="hover" sx={{ fontWeight: 'bold', color: '#000' }}>
+                            Восстановить
+                        </Link>
+                    </Typography>
                 </Box>
             </Paper>
         </Container>

@@ -29,13 +29,19 @@ const getLocalToken = (key: string): string | null => {
     return localStorage.getItem(key);
 };
 
+const getLocalUser = (): User | null => {
+    if (typeof window === "undefined") return null;
+    const user = localStorage.getItem("user");
+    return user ? JSON.parse(user) : null;
+};
+
 const initialState: AuthState = {
     accessToken: getLocalToken("accessToken"),
     refreshToken: getLocalToken("refreshToken"),
     isAuthenticated: !!getLocalToken("accessToken"),
     loading: false,
     error: null,
-    user: null,
+    user: getLocalUser(),
 };
 
 export const loginUser = createAsyncThunk<
@@ -60,7 +66,7 @@ export const fetchCurrentUser = createAsyncThunk<
     { rejectValue: string }
 >("auth/fetchCurrentUser", async (_, { rejectWithValue }) => {
     try {
-        const response = await UserService.getMe(); // GET /users/me
+        const response = await UserService.getMe();
         return response.data;
     } catch (error: any) {
         return rejectWithValue("Не удалось получить данные пользователя");
@@ -78,6 +84,7 @@ const authSlice = createSlice({
             state.isAuthenticated = false;
             localStorage.removeItem("accessToken");
             localStorage.removeItem("refreshToken");
+            localStorage.removeItem("user");
         },
     },
     extraReducers: (builder) => {
@@ -101,6 +108,7 @@ const authSlice = createSlice({
             })
             .addCase(fetchCurrentUser.fulfilled, (state, action: PayloadAction<User>) => {
                 state.user = action.payload;
+                localStorage.setItem("user", JSON.stringify(action.payload));
             })
             .addCase(fetchCurrentUser.rejected, (state, action) => {
                 state.error = action.payload || "Ошибка при загрузке пользователя";

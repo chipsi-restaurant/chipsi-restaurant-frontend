@@ -19,4 +19,13 @@ export default class AuthService {
     static async refresh(request: RefreshRequest): Promise<AxiosResponse<RefreshResponse>> {
         return api.post<RefreshResponse>('/api/v1/auth/refresh', request)
     }
+
+    static async sendPasswordResetEmail(email: string): Promise<AxiosResponse<void>> {
+        return api.post('/api/v1/auth/password/forgot', { email });
+    }
+
+    static async resetPassword(token: string, newPassword: string): Promise<AxiosResponse<void>> {
+        return api.post('/api/v1/auth/password/reset', { token, newPassword });
+    }
+
 }

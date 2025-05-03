@@ -1,7 +1,7 @@
-import React, { JSX } from 'react';
-import { Navigate, Route, Routes } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store/store";
+import React, {JSX} from 'react';
+import {Navigate, Route, Routes} from "react-router-dom";
+import {useSelector} from "react-redux";
+import {RootState} from "../../store/store";
 
 import Login from "../pages/login/Login";
 import Signup from "../pages/signup/Signup";
@@ -11,16 +11,21 @@ import Profile from "../pages/profile/Profile";
 import CheckoutPage from "../pages/checkoutPage/CheckoutPage";
 import GiftCardPage from "../pages/giftCardPage/GiftCardPage";
 import OrderTrackingPage from "../pages/orderTrackingPage/OrderTrackingPage";
+import BookingPage from "../pages/bookingPage/BookingPage";
+import AdminBookingPage from "../pages/admin/bookingPage/AdminBookingPage";
+import AdminHomePage from "../pages/admin/homePage/AdminHomePage";
+import ForgotPassword from "../pages/forgotPassword/ForgotPassword";
+import ResetPassword from "../pages/resetPassword/ResetPassword";
 
 interface PrivateRouteProps {
     children: JSX.Element;
 }
 
-const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
+const PrivateRoute: React.FC<PrivateRouteProps> = ({children}) => {
     const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
     if (!isAuthenticated) {
-        return <Navigate to="/login" replace />;
+        return <Navigate to="/login" replace/>;
     }
 
     return children;
@@ -30,10 +35,10 @@ interface AdminRouteProps {
     children: JSX.Element;
 }
 
-const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
-    const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
+const AdminRoute: React.FC<AdminRouteProps> = ({children}) => {
+    const {isAuthenticated, user} = useSelector((state: RootState) => state.auth);
     if (!isAuthenticated || !user?.isAdmin) {
-        return <Navigate to="/login" replace />;
+        return <Navigate to="/login" replace/>;
     }
 
     return children;
@@ -47,7 +52,7 @@ const AppRouter = () => {
                 path="/"
                 element={
                     <PrivateRoute>
-                        <Main />
+                        <Main/>
                     </PrivateRoute>
                 }
             />
@@ -55,7 +60,7 @@ const AppRouter = () => {
                 path="/profile"
                 element={
                     <PrivateRoute>
-                        <Profile />
+                        <Profile/>
                     </PrivateRoute>
                 }
             />
@@ -63,7 +68,7 @@ const AppRouter = () => {
                 path="/checkout"
                 element={
                     <PrivateRoute>
-                        <CheckoutPage />
+                        <CheckoutPage/>
                     </PrivateRoute>
                 }
             />
@@ -71,7 +76,7 @@ const AppRouter = () => {
                 path="/gift"
                 element={
                     <PrivateRoute>
-                        <GiftCardPage />
+                        <GiftCardPage/>
                     </PrivateRoute>
                 }
             />
@@ -79,21 +84,47 @@ const AppRouter = () => {
                 path="/orders"
                 element={
                     <PrivateRoute>
-                        <OrderTrackingPage />
+                        <OrderTrackingPage/>
                     </PrivateRoute>
+                }
+            />
+            <Route
+                path="/booking"
+                element={
+                    <PrivateRoute>
+                        <BookingPage/>
+                    </PrivateRoute>
+                }
+            />
+            <Route
+                path="/admin"
+                element={
+                    <AdminRoute>
+                        <AdminHomePage/>
+                    </AdminRoute>
                 }
             />
             <Route
                 path="/admin/menu"
                 element={
                     <AdminRoute>
-                        <MenuPage />
+                        <MenuPage/>
                     </AdminRoute>
                 }
             />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="*" element={<Navigate to={"/login"} />} />
+            <Route
+                path="/admin/booking"
+                element={
+                    <AdminRoute>
+                        <AdminBookingPage/>
+                    </AdminRoute>
+                }
+            />
+            <Route path="/login" element={<Login/>}/>
+            <Route path="/signup" element={<Signup/>}/>
+            <Route path="/forgot-password" element={<ForgotPassword/>}/>
+            <Route path="/reset-password" element={<ResetPassword/>}/>
+            <Route path="*" element={<Navigate to={"/login"}/>}/>
         </Routes>
     );
 };

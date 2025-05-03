@@ -11,6 +11,7 @@ import UserService from "../../../api/services/userService";
 import BonusSelector from "../../bonusSelector/BonusSelector";
 import {OrderAddress, OrderItemsRequest, OrderRequest} from "../../../api/models/request/orderRequest";
 import OrderService from "../../../api/services/orderService";
+import {useNavigate} from "react-router-dom";
 
 
 
@@ -24,6 +25,8 @@ const CheckoutPage: React.FC = () => {
     const [usedBonuses, setUsedBonuses] = useState(0);
     const finalTotal = total - discount - usedBonuses;
     const [code, setCode] = useState("");
+
+    const navigate = useNavigate()
 
 
     const handlePromo = (code: string, discount: number) => {
@@ -65,6 +68,8 @@ const CheckoutPage: React.FC = () => {
         try {
             await OrderService.create(request);
             toast.success(`Оплата прошла успешно! Доставка по адресу: ${selectedAddress.address}`);
+            navigate("/orders")
+
         } catch (error) {
             toast.error("Ошибка при оформлении заказа");
             console.error("Order create error", error);

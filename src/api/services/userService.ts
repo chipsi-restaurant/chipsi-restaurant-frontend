@@ -10,4 +10,9 @@ export default class UserService {
     static async updateMe(payload: Partial<User>): Promise<AxiosResponse<User>> {
         return api.patch(`/api/v1/users/me`, payload);
     }
+
+    static async getUserById(id: number): Promise<AxiosResponse<User>> {
+        return api.get(`/api/v1/users/${id}`);
+    }
+
 }
